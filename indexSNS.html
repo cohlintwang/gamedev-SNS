@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>遊戲開發情報站｜近一個月 AI 與產業動態</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Archivo:wght@500;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F5; --grid:rgba(28,36,64,.055); --surface:#FFFFFF; --ink:#1C2440; --muted:#59617A;
+  --line:#CFD5E2; --accent:#2F55D4; --accent-ink:#FFFFFF; --gold:#B07A00; --gold-soft:#FFF3D1;
+  --chip:#E2E7F1; --chip-on:#1C2440; --chip-on-ink:#FFFFFF;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121829; --grid:rgba(230,233,242,.045); --surface:#1A2238; --ink:#E6E9F2; --muted:#9AA3BC;
+    --line:#2C3754; --accent:#7C9BFF; --accent-ink:#0E1322; --gold:#F2C14E; --gold-soft:#2E2715;
+    --chip:#232D47; --chip-on:#E6E9F2; --chip-on-ink:#121829; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121829; --grid:rgba(230,233,242,.045); --surface:#1A2238; --ink:#E6E9F2; --muted:#9AA3BC;
+  --line:#2C3754; --accent:#7C9BFF; --accent-ink:#0E1322; --gold:#F2C14E; --gold-soft:#2E2715;
+  --chip:#232D47; --chip-on:#E6E9F2; --chip-on-ink:#121829; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:16px; line-height:1.75;
+}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+
+header.top{padding:48px 0 24px}
+.title{font-family:"Archivo","Noto Sans TC",sans-serif;font-weight:900;font-size:clamp(2.1rem,6vw,3.6rem);line-height:1.08;letter-spacing:-.01em;margin:0 0 14px}
+.title small{display:block;font-family:"Noto Sans TC",sans-serif;font-weight:500;font-size:1rem;color:var(--muted);letter-spacing:0;margin-top:10px;max-width:62ch;line-height:1.7}
+.snapshot{display:inline-block;margin-top:6px;font-size:.88rem;color:var(--muted);border-left:3px solid var(--accent);padding:2px 0 2px 10px}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+nav.tabs a{padding:14px 14px 12px;text-decoration:none;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:3px solid transparent}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+main{padding:28px 0 72px}
+.view[hidden]{display:none}
+.intro{color:var(--muted);max-width:68ch;margin:0 0 24px}
+
+/* Top 10 */
+ol.ranking{list-style:none;margin:0;padding:0;counter-reset:r}
+ol.ranking>li{display:grid;grid-template-columns:96px 1fr;gap:4px 20px;padding:28px 0;border-top:1px solid var(--line)}
+ol.ranking>li:first-child{border-top:0}
+.rank{font-family:"Archivo",sans-serif;font-weight:900;font-size:5rem;line-height:.85;color:transparent;-webkit-text-stroke:2px var(--ink);text-align:right}
+ol.ranking>li:nth-child(-n+3) .rank{color:var(--gold);-webkit-text-stroke:0}
+.rank-body h3{margin:0 0 4px;font-size:1.3rem;line-height:1.45}
+.rank-body h3 a{color:var(--ink);text-decoration:none}
+.rank-body h3 a:hover{text-decoration:underline;text-decoration-color:var(--accent)}
+.meta{font-size:.86rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.why{margin:12px 0 10px;max-width:70ch}
+.use{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px 6px}
+.use h4{margin:0 0 6px;font-size:.95rem}
+.use ul{margin:0;padding-left:1.2em}
+.use li{margin-bottom:8px}
+.go{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-weight:700;font-size:.92rem;text-decoration:none;color:var(--accent-ink);background:var(--accent);padding:7px 14px;border-radius:999px}
+.go.alt{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+
+.badge{display:inline-block;font-size:.78rem;font-weight:700;padding:1px 9px;border-radius:999px;background:var(--chip);color:var(--ink)}
+.badge.x{background:var(--ink);color:var(--bg)}
+.badge.threads{background:#6B3FD1;color:#fff}
+.badge.blog{background:#0E7C66;color:#fff}
+.badge.forum{background:#B4531F;color:#fff}
+
+/* Feed */
+.controls{display:flex;flex-direction:column;gap:12px;margin-bottom:22px}
+.search{width:100%;max-width:420px;font:inherit;padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.chiprow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chiprow span.lab{font-size:.86rem;color:var(--muted);margin-right:4px}
+.chip{font:inherit;font-size:.88rem;border:0;cursor:pointer;padding:5px 13px;border-radius:999px;background:var(--chip);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--chip-on);color:var(--chip-on-ink)}
+.count{font-size:.88rem;color:var(--muted)}
+.feed{display:grid;gap:14px}
+.post{position:relative;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:6px 12px 12px 6px;padding:16px 18px}
+.post.ai{border-left-color:var(--accent)}
+.post.top{border-left-color:var(--gold)}
+.post h3{margin:6px 0 6px;font-size:1.08rem;line-height:1.5}
+.post h3 a{color:var(--ink);text-decoration:none}
+.post h3 a::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.post:hover h3 a{text-decoration:underline;text-decoration-color:var(--accent)}
+.post p{margin:0 0 10px;color:var(--ink);max-width:72ch}
+.post .foot{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:.84rem;color:var(--muted)}
+.tag{font-size:.8rem;color:var(--muted)}
+.linkkind{font-weight:700;color:var(--accent)}
+.toppin{font-weight:700;color:var(--gold)}
+.empty{padding:28px;text-align:center;color:var(--muted);background:var(--surface);border-radius:12px;border:1px dashed var(--line)}
+
+/* Ask */
+.ask{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.ask label{font-weight:700;display:block;margin-bottom:6px}
+.ask textarea{width:100%;min-height:120px;font:inherit;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+.ask .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{font:inherit;font-weight:700;border:0;cursor:pointer;padding:9px 18px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.answer{margin-top:18px;white-space:pre-wrap;line-height:1.85;max-width:72ch}
+.note{font-size:.88rem;color:var(--muted);margin-top:10px}
+
+
+/* Saved */
+.save{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:16px 18px;margin-bottom:22px}
+.save h3{margin:0 0 4px;font-size:1.02rem}
+.save p.hint{margin:0 0 10px;font-size:.88rem;color:var(--muted)}
+.save .grid{display:grid;grid-template-columns:1fr 140px;gap:8px}
+.save input,.save select{font:inherit;padding:8px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.save .full{grid-column:1 / -1}
+.saved-list{display:grid;gap:10px;margin-top:12px}
+.saved-item{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px}
+.saved-item a{font-weight:700;word-break:break-all}
+.saved-item .note{margin:2px 0 0;font-size:.9rem;color:var(--ink)}
+.del{font:inherit;font-size:.82rem;border:0;background:transparent;color:var(--muted);cursor:pointer;text-decoration:underline;white-space:nowrap}
+@media (max-width:640px){.save .grid{grid-template-columns:1fr}}
+.refresh{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.refresh .btn{text-decoration:none;display:inline-block}
+header .note{max-width:70ch}
+footer{border-top:1px solid var(--line);padding:22px 0 40px;font-size:.86rem;color:var(--muted)}
+
+@media (max-width:640px){
+  ol.ranking>li{grid-template-columns:1fr}
+  .rank{text-align:left;font-size:3.6rem}
+}
+@media (prefers-reduced-motion:no-preference){
+  .rank{transition:transform .2s}
+  ol.ranking>li:hover .rank{transform:translateX(-4px)}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1 class="title">遊戲開發情報站
+      <small>整理開發者在 Threads、X、論壇（PTT、LINUX DO 等）與個人部落格親自發布的遊戲開發貼文，以 AI 應用為主軸。Threads 貼文是從媒體報導中引用的原帖找出來的；Facebook 這次沒有找到符合的貼文。</small>
+    </h1>
+    <div class="refresh">
+      <span class="snapshot">資料更新到 <b id="lastUpdate"></b>，共收錄 <b id="total"></b> 則</span>
+      <a class="btn" id="refreshBtn" href="#" target="_blank" rel="noopener">用 Claude 更新這份資料</a>
+      <button class="btn ghost" id="copyPrompt" type="button">複製搜尋指令</button>
+    </div>
+    <p class="note" id="refreshNote">這是可以放到任何網站的獨立版本。要更新資料時，按「用 Claude 更新這份資料」開啟 Claude，上傳這個 HTML 檔並送出指令，Claude 會搜尋新貼文並產生更新後的檔案；再把新檔案上傳回原本放置的地方即可。</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="主要分頁">
+  <div class="wrap">
+    <a href="#top10" data-view="top10">精選 10 篇</a>
+    <a href="#feed" data-view="feed">全部貼文</a>
+    <a href="#ask" data-view="ask">問 AI：對我的專案有什麼用？</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <section class="view" id="view-top10" aria-labelledby="h-top10">
+      <h2 id="h-top10" style="margin:0 0 6px">最值得遊戲開發者細讀的 10 篇</h2>
+      <p class="intro">排序依據：能否直接用在開發流程、技術深度，以及內容是否可驗證（有提示詞、程式碼或數據）。每篇附上我們能直接拿來用的技術或做法。</p>
+      <ol class="ranking" id="ranking"></ol>
+    </section>
+
+    <section class="view" id="view-feed" aria-labelledby="h-feed" hidden>
+      <h2 id="h-feed" style="margin:0 0 14px">全部貼文</h2>
+      <div class="save">
+        <h3>加入我找到的貼文</h3>
+        <p class="hint">Threads、Facebook 的貼文無法自動蒐集。貼上連結並寫一句重點，會存在這台裝置的瀏覽器裡，也會一併提供給「問 AI」分析。</p>
+        <div class="grid">
+          <input id="sUrl" type="url" placeholder="貼文連結，例如 https://www.threads.com/..." aria-label="貼文連結">
+          <select id="sSrc" aria-label="平台"><option>Threads</option><option>Facebook</option><option>X</option><option>其他</option></select>
+          <input id="sNote" class="full" type="text" placeholder="這篇在講什麼？例如：用 Claude 做 Unity 存檔系統的心得" aria-label="重點">
+        </div>
+        <div class="row" style="display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn" id="sAdd" type="button">加入貼文</button>
+          <span class="count" id="sMsg"></span>
+        </div>
+        <div class="saved-list" id="savedList"></div>
+      </div>
+      <div class="controls">
+        <input class="search" id="q" type="search" placeholder="搜尋標題、作者或內容" aria-label="搜尋貼文">
+        <div class="chiprow" id="srcChips"><span class="lab">來源</span></div>
+        <div class="chiprow" id="tagChips"><span class="lab">主題</span></div>
+        <div class="chiprow" id="rangeChips"><span class="lab">時間</span></div>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="feed" id="feedList"></div>
+    </section>
+
+    <section class="view" id="view-ask" aria-labelledby="h-ask" hidden>
+      <h2 id="h-ask" style="margin:0 0 6px">問 AI：這些情報對我的專案有什麼用？</h2>
+      <p class="intro">描述你正在做的遊戲（類型、引擎、團隊規模、卡關的地方），Claude 會根據本頁收集的貼文，挑出跟你最相關的內容並給出具體建議。</p>
+      <div class="ask" id="askBox">
+        <label for="proj">我的專案</label>
+        <textarea id="proj" placeholder="例如：3 人團隊，用 Unity 6 做 2D 像素風 roguelike，預計明年上 Steam。美術人力不足，想知道 AI 能幫上哪些忙、有什麼風險。"></textarea>
+        <div class="row">
+          <button class="btn" id="askBtn" type="button">取得建議</button>
+          <button class="btn ghost" id="stopBtn" type="button" hidden>停止</button>
+        </div>
+        <p class="note" id="askNote"></p>
+        <div class="answer" id="answer" aria-live="polite"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    這個頁面是資料快照，不會自動更新，資料由 Claude 搜尋整理。X 的貼文搜尋得到；Threads 與 Facebook 會擋自動讀取，所以 Threads 貼文是透過媒體報導裡引用的原帖找回來的，部分只能連到作者帳號。Facebook 這次在報導中找不到近一個月與遊戲開發相關的貼文。看到好的 Threads 或 FB 貼文，可以用「全部貼文」分頁上方的「加入我找到的貼文」存起來。想更新內容，回到 Claude 對話說「更新遊戲開發情報」即可。
+  </div>
+</footer>
+
+<script>
+const POSTS = [
+  {id:"1in8b", date:"2026-10-05", dateLabel:"10/5", src:"Threads", author:"Jin's Earth（진휘어스）", ai:true, via:"遠見、NOWnews",
+   title:"用 AI 4 小時做出《80億分之1》，在 Threads 分享製作過程後爆紅台日韓",
+   summary:"韓國獨立開發者用一段提示請 AI 以聯合國、WHO、世界銀行的統計資料，做出隨機投胎、走完一生的人生模擬。當晚他在 Threads 分享製作過程，網友要求試玩，他就當場架站買網域，從第一條提示到公開約 4 小時。連結被轉到 X 與 KakaoTalk，10/7 單日造訪量暴增近 7 倍，約 58% 的玩家玩到人生結局。之後推出繁中版、擴充到 172 國，並加入付費會員功能。",
+   tags:["實作分享","創意點子","市場趨勢"], url:"https://www.threads.com/share/IcoG9H0AC/", kind:"post"},
+  {id:"fab24hr", date:"2026-10-16", dateLabel:"10 月中", src:"Threads", author:"Marcel（@mrclty）", ai:true, via:"遠見",
+   title:"《fab24hr》：AI 協作做出的晶圓廠上班模擬",
+   summary:"台灣獨立開發者做的半導體晶圓廠工作模擬，有製程、設備、黃光、廠務、封測等 10 種職位，依開始遊戲的時間分成四個班別。對話中的專有名詞可點開白話解釋，還穿插「一二三木頭人」趁主管轉身下班的小遊戲，結算時統計加班與被電話打斷的次數。被《遠見》列為 Threads 上 AI 協作開發的熱門模擬遊戲。",
+   tags:["實作分享","創意點子"], url:"https://www.threads.com/@mrclty/media", kind:"profile"},
+  {id:"teacher", date:"2026-10-16", dateLabel:"10 月", src:"Threads", author:"@nick2lin2", ai:true, via:"中時、遠見",
+   title:"《老師，今天能平安下班嗎？》爆紅後改版為《輔導室：今天也不能倒下》",
+   summary:"以 AI 工具協助設計約 120 道校園情境題的教師生存遊戲在 Threads 爆紅，之後改版成扮演國中唯一專任輔導老師的新作：每個選項都會消耗時間，要抽空寫個案紀錄，手機訊息不斷，一直憋尿還會走到泌尿科結局。遊戲以 Claude Artifact 發布。這個 Threads 帳號貼出的連結與《遠見》報導的遊戲網址相同（報導稱作者匿名）。",
+   tags:["實作分享","創意點子"], url:"https://www.threads.com/@nick2lin2/post/DeWodLzGYJv/", kind:"post"},
+  {id:"sanbao", date:"2026-10-16", dateLabel:"10 月", src:"Threads", author:"阿班（@aihub.tw）", ai:true, via:"遠見",
+   title:"《三寶模擬器》：把台灣交通亂象做成駕駛挑戰",
+   summary:"台灣網友做的駕駛遊戲，有「國道模式」（從台北開到屏東，三次失誤機會）與「成為三寶」模式，可選重機、轎車、計程車甚至垃圾車，路牌、店家都是熟悉的在地元素。被《遠見》列為 Threads 上 AI 協作開發的模擬遊戲之一。",
+   tags:["實作分享","創意點子"], url:"https://www.threads.com/@aihub.tw", kind:"profile"},
+  {id:"4388", date:"2026-10-22", dateLabel:"約 10/22", src:"Threads", author:"@myttt.invest", ai:false, via:"NOWnews",
+   title:"香港玩家在 Threads 發起「4388 小遊戲」收錄站，開放投稿",
+   summary:"因 Threads 上「求好玩網頁遊戲」的串文留言動輒數百則、滑過就找不回，他建立收錄站，初期收錄超過 2000 款、分 19 類，有評分、留言與排行榜，並開放開發者投稿自製網頁遊戲。11/4 的 7 日點擊榜前 6 名全是料理類，冠軍約 1.1 萬次點擊。",
+   tags:["市場趨勢","發行管道"], url:"https://www.threads.com/@myttt.invest/post/Dev0WXjHyM1", kind:"post"},
+  {id:"cooking", date:"2026-10-22", dateLabel:"10 月下旬", src:"Threads", author:"台灣、香港 Threads 用戶", ai:false, via:"聯合新聞網、Weekend HK",
+   title:"料理網頁小遊戲洗版 Threads：一則擠霜淇淋貼文約 170 萬瀏覽",
+   summary:"熱潮多來自日本創作者的料理模擬器（蛋包飯、霜淇淋、章魚燒、可麗餅、咖哩），玩法是把料理拆成步驟、完成後打分數。一位網友曬出霜淇淋成品、笑問能不能去應徵超商店員，貼文約 170 萬瀏覽，留言區變成大家的作品發表會。香港用戶也整理了 18 款網友自製小遊戲，如芝娃娃模擬器、香港餐廳經營、繪畫過山車。（原貼文未附連結，此處連到整理報導）",
+   tags:["市場趨勢","創意點子"], url:"https://tech.udn.com/tech/amp/story/123154/9832939", kind:"report"},
+  {id:"syngamelab", date:"2026-10-10", dateLabel:"約 10 月初", src:"Threads", author:"@syngamelab", ai:true, via:"Threads 轉貼串",
+   title:"「與 AI 一起做遊戲 Day 122」：改用 Opus 5.5 重做《墓火酒館》的呈現",
+   summary:"這位開發者從 6 月開始每天記錄用 AI 做遊戲。他最近改用 Claude Opus 5.5 把《墓火酒館》的整體呈現重做一遍，準備趕上新品節；他觀察到模型會認真截圖、逐格看演出再微調，另一個專案的大劍動作也終於變得能看。他坦言已經分不清是自己變強，還是 AI 變強太多。",
+   tags:["實作分享","技術技巧"], url:"https://www.threads.com/@syngamelab", kind:"profile"},
+  {id:"extort", date:"2026-10-17", src:"X", author:"Takashi Mochibe 等獨立開發者", ai:true, via:"動區、4Gamers",
+   title:"收到「付錢否則上架 AI 複製版」恐嚇信，公開後願望清單單日暴增 38,400%",
+   summary:"日本開發者 Takashi Mochibe（戰棋 RPG《Dragon’s Chronicles》）10/17 在 X 公開恐嚇信：要求 24 小時內給價值 200 美元的 Steam 道具，否則搶先上架 AI 複製版；10/20 他貼出願望清單單日暴增 38,400%，恐嚇反成宣傳。同類事件還有《Iron Pilgrim》與《Circusar》，韓國《Spookitchen》團隊則因此撤下試玩版。（原貼文未找到直接連結，此處連到報導）",
+   tags:["市場趨勢"], url:"https://www.blocktempo.com/spookitchen-ai-clone-threats-indie-developers-pull-steam-demos-fear/", kind:"report"},
+  {id:"unityplugin", date:"2026-10-19", src:"X", author:"0xMarioNawfal（@RoundtableSpace）", ai:true,
+   title:"Unity 官方 Claude Code 外掛：32 個技能直接在專案裡實作",
+   summary:"繼 Epic 之後，Unity 也推出官方 Claude Code 外掛：涵蓋內購與獎勵廣告、多人連線與 Vivox 語音、AI 導航、2D/3D 物理、在地化（包括修正非拉丁文字顯示問題）、遷移到 URP 與網頁平台優化。用白話下指令就會自動挑對的技能。貼文附安裝指令，並提醒它會直接修改場景與腳本，大改前先 commit。",
+   tags:["工具與資源"], url:"https://x.com/RoundtableSpace/status/2112034756322050172", kind:"post"},
+  {id:"frank", date:"2026-10-19", dateLabel:"約 10/19", src:"部落格", author:"Frank Warman（Medium）", ai:true,
+   title:"音訊工程師轉 Unity 開發：用 Claude Code + Unity MCP 開新作的開發日誌",
+   summary:"作者 9 月底裝好 Claude Code 與 Unity MCP 後，宣布以 Claude、Unity、Blender 製作新作 LoU_Zior 並開始寫開發日誌。策略是先用 AI 把遊戲做到 MVP，有收入後再請人類美術製作正式版的 3D 模型與場景。",
+   tags:["實作分享"], url:"https://frankgwarman.medium.com/ai-assisted-game-dev-my-new-work-flow-and-new-project-63cb89011c3e", kind:"post"},
+  {id:"zukowski", date:"2026-10-21", src:"部落格", author:"Chris Zukowski（How To Market A Game）", ai:false,
+   title:"10 月新品節初步數據：前 25 名 Demo 只有 2 款揭露使用 AI",
+   summary:"知名 Steam 行銷顧問收集 10 月新品節所有遊戲的資料：新品節規模自 2023 年 6 月以來成長 8 倍；熱門前 25 名只有 2 款揭露使用 AI。他也指出參展者變多造成願望清單「通膨」，願望清單轉換成銷量的比例下降。（連到整理他文章的 GameDev Reports）",
+   tags:["市場趨勢"], url:"https://gamedevreports.substack.com/p/how-to-market-a-game-first-results", kind:"report"},
+  {id:"nexusai", date:"2026-10-18", src:"論壇", author:"AlystriaAI（Nexus Mods）", ai:true,
+   title:"Cyberpunk 2077「AI Companions」模組：用 LLM 讓任何 NPC 都能對話",
+   summary:"玩家可用語音或文字和任何角色對話，角色知道你目前的任務、穿著與持有物品，開啟選項後還能「看到」當下遊戲畫面。支援十多種介面語言與多家語音服務，玩家自帶 API 金鑰。是觀察玩家實際如何使用 AI NPC 的案例。",
+   tags:["AI NPC","創意點子"], url:"https://www.nexusmods.com/cyberpunk2077/mods/35436", kind:"post"},
+  {id:"aplusnpc", date:"2026-10-13", src:"論壇", author:"A+ Games Studio（DEV Community）", ai:true,
+   title:"AI NPC 怎麼做、要花多少錢",
+   summary:"整理目前的實作經驗：AI NPC 最適合目標明確的窄角色，例如會評論玩家行為的同伴、可以殺價的商人、可以審問的嫌犯。需要內容護欄、模型慢或答錯時的備援，以及上線前的運算成本估算；模型只能請求一份固定的動作清單，由遊戲驗證後才改變遊戲狀態。",
+   tags:["AI NPC","技術技巧"], url:"https://dev.to/aplusgamesstudio/ai-npcs-in-2026-how-llm-characters-are-built-and-priced-1688", kind:"post"},
+  {id:"pttsteam", date:"2026-11-03", src:"論壇", author:"PTT Steam 板", ai:true,
+   title:"[閒聊] Steam 10 月新作近一半自曝使用生成式 AI",
+   summary:"轉貼 Reddit 網友 u/ploz 的統計：10 月新作 49.9% 揭露使用 AI。細項很有參考價值：只有 3% 在遊玩時即時生成內容，8% 只把 AI 用在商店頁素材；一年推出 10 款以上的開發者有 68% 揭露，只推出一款的開發者是 37%。",
+   tags:["市場趨勢"], url:"https://www.pttweb.cc/bbs/Steam/M.1793696446.A.5A5", kind:"post"},
+  {id:"pttacg", date:"2026-10-21", src:"論壇", author:"PTT ACG 板網友", ai:true,
+   title:"[閒聊] 獨立遊戲寒冬到來",
+   summary:"網友指出本次新品節參展數量創新高、約 8000 款，擔心大量 AI 粗製作品稀釋曝光，也有人用 AI 破解 Demo 程式碼搶先上架、甚至勒索正版製作人。可以看到台灣玩家社群對 AI 遊戲的觀感。",
+   tags:["市場趨勢"], url:"https://disp.cc/b/ACG/iimu", kind:"post"},
+  {id:"rtsselfplay", date:"2026-10-02", src:"論壇", author:"大佬說論壇用戶", ai:true,
+   title:"用 Opus 5.5 做的 RTS：讓 AI 自我對戰練出內建電腦對手",
+   summary:"作者做出要素完整的即時戰略遊戲（經驗、技能、科技、分礦、海戰、聯機），並為遊戲寫了完整的命令列工具，讓 AI 代理能直接操作遊戲；內建電腦對手就是讓 Opus 5.5 透過這套工具自我對戰迭代出來的。模擬一局 30 分鐘的對戰只要 20 秒以內，劇情戰役也能用內嵌 TypeScript 腳本讓 AI 一句話生成。",
+   tags:["實作分享","技術技巧"], url:"https://www.locdd.com/t/topic/96969", kind:"post"},
+  {id:"roundup1003", date:"2026-10-03", src:"X", author:"Muhammad Ayan（@socialwithaayan）", ai:true,
+   title:"Opus 5.5 十一個案例：48 分鐘把 1996 年老遊戲移植到現代 macOS",
+   summary:"整理串列包含：@asingleoat 用 Opus 5.5 一次反編譯 1996 年的《Chaos Overlords》並在 48 分鐘內移植到現代 macOS；@xikhar 結合 Blender、生圖與 three.js 從零做出夜晚城市遊戲；以及用 three.js 做的互動 3D 噴射引擎教材。",
+   tags:["實作分享"], url:"https://x.com/socialwithaayan/status/2106394377933525347", kind:"post"},
+  {id:"nomadius", date:"2026-10-03", src:"Threads", author:"@nomadius.cyou", ai:true,
+   title:"用 Opus 5.5 把倉儲儀表板做成像策略遊戲的介面",
+   summary:"轉分享 DilumSanjaya 的作品：把一般的倉庫管理儀表板，用 Opus 5.5 改造成類似策略遊戲的視覺呈現。示範遊戲化介面也能反向應用到非遊戲產品，是遊戲美術與 UI 能力的延伸接案方向。",
+   tags:["創意點子"], url:"https://www.threads.com/@nomadius.cyou/post/DeD53cdAjM8", kind:"post"},
+  {id:"belt", date:"2026-09-29", src:"X", author:"Belt（@bletDemonJH）", ai:true,
+   title:"一個提示做出完整 Roblox 遊戲，聲稱一天能產出 8 款",
+   summary:"他表示 Opus 5.5 一次包辦遊戲設計、建模、地圖、UI、腳本與縮圖，只靠一個提示和粗略點子；以他目前的流程，一天能做 8 款。貼文約 9 萬瀏覽。對 UGC 平台開發者來說，代表簡單玩法的供給量會暴增。",
+   tags:["實作分享","市場趨勢"], url:"https://x.com/bletDemonJH/status/2104871105752391780", kind:"post"},
+  {id:"foxhsiao", date:"2026-09-26", dateLabel:"約 9/26", src:"Threads", author:"@fox.hsiao", ai:true,
+   title:"Opus 5.5 發布 4 天，依 X 觀看數整理前十名作品",
+   summary:"他照 X 觀看數挑出 Opus 5.5 發布後網友做的前十名作品（動畫短片、Blender 3D 場景、賽車、射擊與城市遊戲），影片中標註每位作者帳號。第一名是一次生成的互動相機對焦實驗室，作者說跑了約 1.5 小時、API 費用約 26 美元。",
+   tags:["實作分享","工具與資源"], url:"https://www.threads.com/@fox.hsiao/post/DdvFFttlE7l/", kind:"post"},
+  {id:"theforest", date:"2026-09-25", src:"X", author:"aipulsedaily（@aipulseda1ly）", ai:true,
+   title:"一天做出類《The Forest》生存遊戲：代理分工＋不碰程式的「評審代理」",
+   summary:"作者用 Claude Code 把世界拆給一波波各負責一個領域的代理，另設不碰程式、只拿渲染畫面和真實照片比對的評審代理。成果是 2 公里、模擬侵蝕地形的島嶼與 4.4 萬棵程式生成的樹；他也坦承狼的品質最差、還跑不到 60 FPS。留言有人質疑是否用了 InstancedMesh，否則這數量會很卡。",
+   tags:["實作分享","技術技巧"], url:"https://x.com/aipulseda1ly/status/2103352533657719230", kind:"post"},
+  {id:"genex", date:"2026-09-23", src:"X", author:"Genex（@genex_games）", ai:true,
+   title:"用 Opus 5.5 + 遊戲開發代理工具在瀏覽器做出籃球遊戲",
+   summary:"Genex 展示以 Opus 5.5、three.js 與自家「給代理用的遊戲開發工具」做出的瀏覽器籃球遊戲，附可試玩連結，貼文約 15 萬瀏覽。留言最關心的是球場互動有多少是代理做的、多少是人工調整。",
+   tags:["實作分享","工具與資源"], url:"https://x.com/genex_games/status/2102695292113981770", kind:"post"},
+  {id:"kana", date:"2026-09-24", dateLabel:"約 9/24", src:"X", author:"KANA（@KanaWorks_AI）", ai:true,
+   title:"Opus 5.5 × Godot 做 3D 遊戲：比 Unity 更順手",
+   summary:"日本創作者分享用 Claude Opus 5.5 搭配 Godot 開發 3D 遊戲，覺得比 Unity 輕巧好上手、成品也不錯。留言區多位開發者附和，認為 Godot 是目前最適合 vibe coding 的引擎。",
+   tags:["實作分享"], url:"https://x.com/KanaWorks_AI/status/2102955708321062975", kind:"post"},
+  {id:"argofowl", date:"2026-09-22", src:"X", author:"@argofowl", ai:true,
+   title:"公開提示詞：讓 Opus 5.5 自己定目標、做到完成才響鈴",
+   summary:"他公開讓 Opus 5.5 做無限程序生成 three.js 世界的完整提示：描述想要的氛圍（像超市模擬器那樣療癒，但不是超市遊戲）、要有可互動的生物，最後要求模型「為專案設定明確目標，持續工作直到達成，完成時播放提示音」。這個收尾寫法很適合長時間自主任務。",
+   tags:["技術技巧"], url:"https://x.com/argofowl/status/2102529695908806728", kind:"post"},
+  {id:"kart", date:"2026-09-22", src:"X", author:"BuilderHelm（@builderhelmai）", ai:true,
+   title:"Opus 5.5 發布當天：three.js 卡丁車遊戲含選單、多模式與可玩版本",
+   summary:"Opus 5.5 發布當天的實測：做出有多種賽事模式、完整選單、多名對手、細緻賽道與光影的卡丁車遊戲，並附上可直接遊玩的 Claude Artifact 連結。",
+   tags:["實作分享"], url:"https://x.com/builderhelmai/status/2102483365261987938", kind:"post"},
+  {id:"vox", date:"2026-10-13", src:"X", author:"Vox（@Voxyz_ai）", ai:true,
+   title:"用 Claude Code 做 Unreal 遊戲，先裝 Epic 官方的 Unreal 外掛",
+   summary:"他推薦先安裝 Epic 官方的 Claude Code 外掛：能在開著的編輯器裡自己新增節點、接線並編譯 Blueprint，橫跨 30 多組工具集，可改關卡、材質、Niagara 特效、Sequencer 鏡頭，也能跑自動化測試。第一次會引導你開啟 Unreal MCP（5.8 文件仍標為實驗性）與 All Toolsets。留言區有人補充：官方外掛開放的功能還不夠多，他會再加裝社群的 ue-mcp。",
+   tags:["AI應用","工具與資源"], url:"https://x.com/Voxyz_ai/status/2110007656073007452", kind:"post"},
+  {id:"studios", date:"2026-10-30", src:"X", author:"Hakimi Eiqbal（@hakimieiqbal）", ai:true,
+   title:"Claude Code Game Studios：把一個 Claude Code 變成 49 個代理的遊戲工作室",
+   summary:"開源專案把代理分成總監、組長、專員的層級，各自分工而不是一個代理包辦全部；內建 Godot 4、Unity、UE5 專用代理組，指令從腦力激盪、系統設計、架構、寫故事、開發、code review，一路到效能分析、回歸測試、試玩報告與上架檢查表。他特別欣賞的一點：畫面類的修改不會只因測試通過就算完成。",
+   tags:["AI應用","工具與資源"], url:"https://x.com/hakimieiqbal/status/2116096024921993572", kind:"post"},
+  {id:"norecreate", date:"2026-10-27", src:"X", author:"chasm 發現、Addy Osmani（Anthropic）確認", ai:true,
+   title:"Claude Code 新規則：可做原創與類型遊戲，但不重製特定既有遊戲",
+   summary:"X 用戶 chasm 發現 Claude Code 在 Opus 5.5 的提示中加入兩句新規則：鼓勵做原創遊戲、類型遊戲與使用者自有設計素材的遊戲，但不重製特定的既有遊戲，即使改名或聲稱原創。10/30 Anthropic 的 Addy Osmani 在 X 確認這項改動，並請開發者在自己的作品被誤擋時回報給他。已有獨立開發者回報誤判。（兩則原貼文未找到可直接開啟的連結，此處連到轉述的報導）",
+   tags:["AI應用","法規授權"], url:"https://www.pocketgamer.biz/anthropic-restricts-claude-from-recreating-existing-games-amid-ai-cloning-concerns/", kind:"report"},
+  {id:"willison", date:"2026-10-28", src:"部落格", author:"Simon Willison", ai:true,
+   title:"「十月轉折點」：AI 做遊戲從寫得出來，進入真的好玩",
+   summary:"長期實測 AI 工具的開發者 Simon Willison 認為 2026 年 10 月是用 vibe coding 做遊戲的轉折點，新模型在 3D 建模等做好遊戲所需的能力上明顯進步。他公開了多款實驗作品（Tree Appreciator、Emberwick、Battle Drones、Pumpkin Farmer 等）與完整的 AI 對話紀錄，也坦言極少的創意投入就能得到有趣成果，讓他既興奮又不安。",
+   tags:["AI應用","實作分享"], url:"https://simonwillison.net/2026/Oct/28/vibe-game-development/", kind:"post"},
+  {id:"mars", date:"2026-10-10", dateLabel:"約 10/10", src:"論壇", author:"LINUX DO 用戶", ai:true,
+   title:"花 15 億 token 用 Opus 5.5 做 Godot 火星遊戲，能做到什麼程度",
+   summary:"作者用 NASA 公開火星資料（HiRISE、CTX、MOLA、Navcam）做 3D 探索遊戲。因 Godot 缺乏寫實渲染功能，Opus 5.5 直接替引擎打補丁、合併上游測試功能（接觸陰影、多次反彈 AO、遠處陰影級聯快取）；地形取高、撒石、地平線遮擋等用 C++ 擴充，其餘用 GDScript。RTX 3070 在 2K 約 90–100 FPS；他認為目前瓶頸是很難做出 UE5 等級的材質質感。",
+   tags:["AI應用","實作分享"], url:"https://linux.do/t/topic/3002523", kind:"post"},
+  {id:"alex", date:"2026-11-05", dateLabel:"約 11/5", src:"X", author:"alex saint（@alexsssaint）", ai:true,
+   title:"不用引擎、不用美術檔，用 Claude 讓 three.js 遊戲看起來像 Unreal",
+   summary:"他花 21 天、412 次 commit、1,045 個測試，完全沒有美術檔案，用 Claude 把 three.js 遊戲做出 Unreal 般的畫面。重點是大約十種效果依正確順序疊加，並附上每個效果的程式碼；也分享了效能坑，例如遊戲最精彩的時刻曾卡頓 2.5 秒，最後靠合併網格、假玻璃與預先載入解決。",
+   tags:["AI應用","實作分享","技術技巧"], url:"https://x.com/alexsssaint/status/2118297765092442622", kind:"post"},
+  {id:"skills", date:"2026-10-29", src:"X", author:"badboyfoxy（@badboyfoxy）", ai:true,
+   title:"Awesome Gamedev Agent Skills：77 個免費的遊戲開發技能包給 AI 代理",
+   summary:"開源技能集合，可給 Claude Code、Cursor 等代理使用，支援 Godot、Unity、Unreal、Roblox 等，涵蓋 AI、物理、存檔、UI、遊戲手感，甚至協助上架 Steam 與 itch.io。內建路由器會偵測你用的引擎，只載入需要的技能。",
+   tags:["AI應用","工具與資源"], url:"https://x.com/badboyfoxy/status/2115834352223261002", kind:"post"},
+  {id:"mnilax", date:"2026-10-14", dateLabel:"約 10/14", src:"X", author:"Mnimiy（@Mnilax）", ai:true,
+   title:"15 個把 Opus 5.5 變成遊戲工作室的 GitHub 專案",
+   summary:"整理清單涵蓋：UnrealClaude（Claude Code 嵌入 Unreal 編輯器）、Unreal_mcp、VibeUE、對照 5.8 原始碼驗證過的 31 個 Unreal C++ 技能、讓 NPC 以代理形式運作的 UnrealGenAISupport、Unity-MCP、Unity ml-agents（強化學習訓練 NPC）、godot-mcp，以及 NVIDIA Audio2Face-3D（輸入語音、輸出對嘴與臉部動畫，附 UE5 外掛）。",
+   tags:["AI應用","工具與資源"], url:"https://x.com/Mnilax/status/2110039818524660135", kind:"post"},
+  {id:"rimsha", date:"2026-10-14", src:"X", author:"Rimsha Bhardwaj（@heyrimsha）", ai:true,
+   title:"10 個讓 Claude Code / Codex 做遊戲的 GitHub 專案",
+   summary:"清單包含：描述遊戲就由代理寫程式的 Godogen、能在 Godot 編輯器內操作的 Godot AI、把一張角色圖轉成可用動畫的 sprite-gen、把故事轉成可玩遊戲的 NovelToGame，以及支援 Godot、Unity、Unreal、Phaser、Three.js、Bevy、Roblox 的遊戲開發技能包。",
+   tags:["AI應用","工具與資源"], url:"https://x.com/heyrimsha/status/2110321800936866244", kind:"post"},
+  {id:"hockey", date:"2026-10-22", dateLabel:"約 10/22", src:"論壇", author:"LINUX DO 用戶", ai:true,
+   title:"Opus 5.5 做的線上彈射冰球遊戲，公開完整提示詞",
+   summary:"作者看到 X 上的桌遊影片後，用一段詳細提示做出可連線對戰的 2.5D 網頁遊戲：指定 TypeScript + Three.js + Rapier 物理、Node.js + Colyseus 連線，寫清楚視角、規則、回合倒計時、防穿牆與音效；電腦對手以模擬彈道選擇方向與力度，用瞄準誤差區分三種難度。約用掉兩次 Pro 方案 5 小時額度。",
+   tags:["AI應用","實作分享","技術技巧"], url:"https://linux.do/t/topic/3057890", kind:"post"},
+  {id:"bobaaa", date:"2026-10-28", src:"X", author:"bobaaa（@0xbobaaa）", ai:true,
+   title:"把自己遊戲的浮空島交給 Opus 5.5，21 分鐘做出 60 秒 3D 宣傳短片",
+   summary:"他把自己遊戲《Skyhold》的浮空島圖片交給 Opus 5.5，從空資料夾開始，用 three.js 建出島嶼、房屋、瀑布與熱氣球，自己編了小鎮從無到有、入夜點燈的劇情，每一格都由程式繪製；他只加了逐格錄製用的 render hook。他在 10/12 另有長文分享 5 小時內做出手機遊戲的流程。",
+   tags:["AI應用","實作分享","行銷宣傳"], url:"https://x.com/0xbobaaa/status/2115486834755035178", kind:"post"},
+  {id:"racing", date:"2026-10-12", src:"X", author:"agim（@aGim_asf）", ai:true,
+   title:"一個提示、單一檔案、不修改：35 分鐘做出完整賽車遊戲",
+   summary:"他實測給 Opus 5.5 一個提示，要求在單一檔案內一次做出完整賽車遊戲且不做任何修改，約 35 分鐘完成並附上影片。適合作為評估模型一次產出能力的參考基準。",
+   tags:["AI應用","實作分享"], url:"https://x.com/aGim_asf/status/2109748109312172039", kind:"post"},
+  {id:"levelsio", date:"2026-10-20", src:"X", author:"Pieter Levels（@levelsio）", ai:true,
+   title:"用 Claude Code 為《GTA: San Andreas》做全新任務，提示詞全公開",
+   summary:"他讓 Claude Code 做出一個新任務：主角 CJ 要 vibe code 一間新創並向舊金山投資人募資，對白與字幕完整、配音由語音合成產生。影片觀看破百萬，完整提示公開在貼文中；重製需要正版 PC 遊戲。是 AI 協助做 Mod 與敘事內容的代表案例。（原貼文未找到可直接開啟的連結，此處連到轉述的報導）",
+   tags:["AI應用","創意點子"], url:"https://pasqualepillitteri.it/en/news/26958/gta-san-andreas-mission-claude-code-pieter-levels", kind:"report"},
+  {id:"megajam", date:"2026-10-22", src:"X", author:"Unreal Engine（@UnrealEngine）", ai:true,
+   title:"Epic AI MegaJam：最多 5 人加無限 AI 代理，4 天做出 Unreal 遊戲",
+   summary:"11/12–15 舉行，可線上或到舊金山參加，用 Unreal Engine 或 UEFN 製作，鼓勵透過 Unreal MCP 讓代理直接操作編輯器。主題 11/11 直播公布，有現金獎與最高 5 萬美元的延續開發補助。官方事後在 X 澄清 AI 為選用、非強制。",
+   tags:["AI應用","活動機會"], url:"https://x.com/UnrealEngine/status/2113347611080151105", kind:"post"},
+  {id:"eula", date:"2026-10-27", src:"X", author:"Tim Sweeney（@TimSweeneyEpic）", ai:true,
+   title:"Unreal EULA 將解除 AI 訓練限制，由開發者自己決定",
+   summary:"Sweeney 在 X 說明：Epic 不允許未經授權使用 Fortnite IP，但正在把禁止用 Unreal Engine 與 MetaHuman 輸出訓練 AI 的條款從 EULA 移除，各遊戲可依開發者的選擇允許或禁止 AI 訓練。官方已於 10/29 更新 EULA；Fab 素材仍可用 NoAI 標籤拒絕。",
+   tags:["AI應用","法規授權"], url:"https://x.com/TimSweeneyEpic/status/2114913470017860071", kind:"post"}
+];
+
+const TOP10 = [
+  {ref:"vox",
+   why:"這是現在就能裝、而且是 Epic 官方出品的工具，直接把「AI 寫 C++ 片段再手動貼進 Unreal」變成「AI 在編輯器裡自己動手」。它涵蓋 Blueprint、關卡、材質、特效、鏡頭與自動化測試，幾乎是 Unreal 團隊導入 AI 代理的標準起點。留言區的補充也很實用：官方工具還不夠完整，社群 MCP 可以補洞。",
+   use:["在 UE 5.8 開啟 Unreal MCP 與 All Toolsets 外掛，用貼文中的指令安裝官方 Claude Code 外掛。","先交給代理做「機械但耗時」的工作：Blueprint 接線、批次調整材質參數、建立自動化測試。","官方工具不足的地方，再加裝社群的 ue-mcp 補齊。","代理能直接改編輯器內容，務必先做好版本控管，每次任務前 commit。"]},
+  {ref:"studios",
+   why:"單一代理處理大型專案時很容易失控，這個專案用「總監、組長、專員」的層級把工作拆開，並把試玩報告、回歸測試、上架檢查表都納入流程。它其實是一份可直接套用的 AI 製作管線範本，對想用 AI 做比 jam 規模更大作品的團隊特別有參考價值。",
+   use:["clone 下來後執行 /start，讓它依你目前的階段（只有點子、有企劃、已有專案）導入對應流程。","即使不全套使用，也可以只拿它的代理定義與指令（如 /code-review、/perf-profile）放進自己的 .claude 資料夾。","借鏡它的原則：畫面相關的修改要人工或截圖確認，不能只看測試通過。","注意它比單純用 Claude Code 更耗用量，先在小專案試跑評估成本。"]},
+  {ref:"norecreate",
+   why:"只要團隊用 Claude Code 開發遊戲，這條規則就會直接影響日常工作：重製特定既有遊戲會被拒絕，而部分正當的委託案、Mod 或逆向工程工作也回報被誤擋。事先知道規則邊界，可以避免工作流程突然卡住。",
+   use:["在專案 CLAUDE.md 或提示中清楚說明這是原創作品，或是你擁有權利的 IP 與素材。","企劃描述以「類型＋自家特色」表達（例如「俯視角生存建造遊戲」），而不是「做一款像某某遊戲的東西」。","若是合法的委託移植或自家舊作重製，被誤擋時依 Osmani 的說法回報給 Anthropic。","這也是保護你自己的機制：別人更難用 Claude Code 直接複製你的遊戲。"]},
+  {ref:"willison",
+   why:"這篇最直接回答「現在的 AI 能把遊戲做到什麼程度」。作者不是廠商，而且附上完整對話紀錄，等於公開了可重現的製作過程。他也點出關鍵隱憂：創意投入很少就能得到不錯的成果，所以差異化的重點會轉到設計判斷上。",
+   use:["把他公開的對話紀錄當教材，學節奏：先做最小核心玩法 → 實際試玩 → 用具體回饋（「跳躍太飄」「敵人太密」）驅動下一輪。","提案期用 AI 一天產出 3–5 個玩法原型，讓企劃用可玩的東西做決策。","3D 建模已可交給模型初步產出，適合做白盒關卡與氛圍驗證。","把省下來的人力投在 AI 最弱的地方：手感、美術方向與獨特設定。"]},
+  {ref:"mars",
+   why:"這是少見的「大量投入」實測，而不是一次提示的展示：15 億 token、真實 NASA 資料、引擎層級的修改與 C++ 擴充，還附上效能數據並坦白說明瓶頸。它讓我們看到 AI 能深入到引擎原始碼，也看清它目前在寫實材質上的極限。",
+   use:["把公開資料集（地形高度圖、衛星影像）當成程序化關卡的素材來源，交給 AI 處理資料轉換。","效能熱點（地形取樣、大量物件擺放）讓 AI 改寫成 C++ GDExtension，其餘維持 GDScript 方便迭代。","需要引擎缺少的渲染功能時，可以讓 AI 研究上游 PR 並合併，但要自建分支並做好測試。","寫實材質仍要靠美術或掃描素材，別期待 AI 從點雲直接做出 UE5 的質感。"]},
+  {ref:"alex",
+   why:"它把「畫面好看」拆解成可以照著做的工程清單：大約十種效果依正確順序疊加，並附上程式碼。1,045 個測試也示範了 AI 協作時如何維持品質。對網頁、手機或小團隊專案來說，這是不用重型引擎也能拉高畫面質感的實用配方。",
+   use:["照他的順序逐一加入後處理效果，每加一層就截圖比較，避免效果互相打架。","大量測試讓 AI 能放心重構，要求代理每次改動都補測試。","效能優化技巧可直接沿用：合併網格、用假玻璃取代真實折射、在關鍵場景前預先載入資源。","適合用在網頁試玩版或宣傳頁，降低玩家試玩門檻。"]},
+  {ref:"skills",
+   why:"AI 代理寫遊戲程式最常見的問題是用錯 API 版本或不懂遊戲特有的做法。技能包把存檔、物理、UI、手感、上架流程等知識預先寫好，還會依引擎自動載入，能明顯降低代理寫出過時或錯誤程式碼的機率。",
+   use:["安裝後讓代理處理存檔系統、輸入、UI 等標準模組，減少重複造輪子。","利用「遊戲手感」相關技能調整打擊感、鏡頭震動等細節。","參考它的上架技能整理 Steam 與 itch.io 的上架檢查。","把團隊自己的程式規範也寫成技能，讓 AI 產出符合專案風格的程式碼。"]},
+  {ref:"mnilax",
+   why:"這份清單的價值在於涵蓋了程式以外的領域：用強化學習訓練 NPC、讓 NPC 以 AI 代理運作、從語音自動產生對嘴與臉部動畫。這些是遊戲本身的 AI 功能，而不只是開發工具，可以直接變成產品賣點。",
+   use:["有配音的專案可評估 NVIDIA Audio2Face-3D，用語音自動產生對嘴動畫，大幅減少動畫工時。","對戰或模擬類遊戲可試 Unity ml-agents，讓 NPC 透過自我對戰學出行為。","想做會對話、會行動的 NPC，參考 UnrealGenAISupport 的整合方式，但要評估執行成本與內容安全。","依引擎挑選對應的 MCP（Unity-MCP、godot-mcp、Unreal_mcp）讓代理能跑遊戲並讀取錯誤。"]},
+  {ref:"hockey",
+   why:"這則貼文最有價值的是公開了一份寫得非常好的提示詞：指定技術選型、物理引擎、連線框架、操作方式、規則細節、AI 對手難度設計與邊界情況。它示範了「把企劃書寫成提示」能讓 AI 一次做出可連線的完整遊戲。",
+   use:["把這份提示當模板：技術棧、視角、核心規則、勝負條件、AI 難度、平台適配、音效回饋，逐項寫清楚。","電腦對手可以用「模擬彈道後選擇最佳解，再加入瞄準誤差」來區分難度，這招適用於很多物理類遊戲。","多人連線可參考 Colyseus 架構，快速驗證連線玩法。","明確要求處理高速穿牆等物理邊界情況，AI 才不會遺漏。"]},
+  {ref:"megajam",
+   why:"Epic 官方背書的 AI 工作流，加上獎金與最高 5 萬美元的延續開發補助，是成本最低的實戰演練。主題 11/11 公布、11/12 開跑，時間就在眼前，可以順便測試上面幾篇提到的工具。",
+   use:["組隊在 itch.io 報名，用 4 天壓力測試團隊的 AI 管線。","事前裝好 Epic 官方 Claude Code 外掛與 Unreal MCP，準備好提示模板與資產流程。","AI 是選用的，可以「人做手感與美術、AI 做系統與工具」混合分工。","完成的作品可直接作為向發行商或補助單位提案的原型。"]}
+];
+
+const byId = Object.fromEntries(POSTS.map(p=>[p.id,p]));
+const topIds = new Set(TOP10.map(t=>t.ref));
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const srcClass = s => s==="X"?"x":s==="Threads"?"threads":s==="部落格"?"blog":s==="論壇"?"forum":"";
+const kindLabel = k => k==="post"?"開啟原貼文":k==="profile"?"開啟作者的 Threads 帳號":"原貼文無直接連結，開啟轉述報導";
+const fmtDate = (d, label) => label || d.replace(/-/g,"/");
+
+document.getElementById("total").textContent = POSTS.length;
+
+/* Top 10 */
+document.getElementById("ranking").innerHTML = TOP10.map((t,i)=>{
+  const p = byId[t.ref];
+  return `<li>
+    <div class="rank" aria-hidden="true">${i+1}</div>
+    <div class="rank-body">
+      <h3><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a></h3>
+      <div class="meta"><span class="badge ${srcClass(p.src)}">${esc(p.src)}</span><span>${esc(p.author)}</span><span>${fmtDate(p.date,p.dateLabel)}</span></div>
+      <p class="why"><b>為什麼有價值：</b>${esc(t.why)}</p>
+      <div class="use"><h4>我們可以拿來用的</h4><ul>${t.use.map(u=>`<li>${esc(u)}</li>`).join("")}</ul></div>
+      <a class="go ${p.kind==="post"?"":"alt"}" href="${esc(p.url)}" target="_blank" rel="noopener">${kindLabel(p.kind)}</a>
+    </div>
+  </li>`;
+}).join("");
+
+/* Feed */
+const SRCS = ["全部","Threads","X","論壇","部落格"];
+const TAGS = ["全部","實作分享","工具與資源","技術技巧","AI NPC","市場趨勢","創意點子","法規授權","行銷宣傳","發行管道","活動機會"];
+let fSrc="全部", fTag="全部", fQ="", fRange="近 1 個月";
+const RANGES = {"近 1 個月":"2026-10-08","近 7 週":"2026-09-20"};
+function chips(el, list, get, set){
+  list.forEach(v=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.type="button"; b.textContent=v;
+    b.setAttribute("aria-pressed", v===get()?"true":"false");
+    b.onclick=()=>{ set(v); el.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", c.textContent===v?"true":"false")); renderFeed(); };
+    el.appendChild(b);
+  });
+}
+chips(document.getElementById("srcChips"), SRCS, ()=>fSrc, v=>fSrc=v);
+chips(document.getElementById("tagChips"), TAGS, ()=>fTag, v=>fTag=v);
+chips(document.getElementById("rangeChips"), Object.keys(RANGES), ()=>fRange, v=>fRange=v);
+document.getElementById("q").addEventListener("input", e=>{ fQ=e.target.value.trim().toLowerCase(); renderFeed(); });
+
+function renderFeed(){
+  const list = POSTS
+    .filter(p => p.date >= RANGES[fRange])
+    .filter(p => fSrc==="全部" || p.src===fSrc)
+    .filter(p => fTag==="全部" || p.tags.includes(fTag))
+    .filter(p => !fQ || (p.title+p.summary+p.author).toLowerCase().includes(fQ))
+    .sort((a,b)=> b.date.localeCompare(a.date));
+  document.getElementById("count").textContent = `顯示 ${list.length} 則（共收錄 ${POSTS.length} 則），依日期由新到舊。「近 7 週」包含 9/22 Claude Opus 5.5 發布後的作品潮。`;
+  const el = document.getElementById("feedList");
+  if(!list.length){ el.innerHTML = `<div class="empty">沒有符合的貼文。換個關鍵字，或把來源與主題切回「全部」。</div>`; return; }
+  el.innerHTML = list.map(p=>`<article class="post ${p.ai?"ai":""} ${topIds.has(p.id)?"top":""}">
+    <div class="meta"><span class="badge ${srcClass(p.src)}">${esc(p.src)}</span><span>${esc(p.author)}</span><span>${fmtDate(p.date,p.dateLabel)}</span>${topIds.has(p.id)?`<span class="toppin">精選第 ${TOP10.findIndex(t=>t.ref===p.id)+1} 名</span>`:""}</div>
+    <h3><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a></h3>
+    <p>${esc(p.summary)}</p>
+    <div class="foot"><span class="linkkind">${kindLabel(p.kind)}</span>${p.via?`<span>經由${esc(p.via)}發現</span>`:""}${p.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div>
+  </article>`).join("");
+}
+renderFeed();
+
+
+/* Saved posts (per-viewer, browser storage) */
+const SKEY = "gdi-saved-v1";
+function loadSaved(){ try{ return JSON.parse(localStorage.getItem(SKEY)||"[]"); }catch(e){ return []; } }
+function storeSaved(list){ try{ localStorage.setItem(SKEY, JSON.stringify(list)); return true; }catch(e){ return false; } }
+let SAVED = loadSaved();
+function renderSaved(){
+  const el = document.getElementById("savedList");
+  if(!SAVED.length){ el.innerHTML = ""; return; }
+  el.innerHTML = SAVED.map((s,i)=>`<div class="saved-item"><div><span class="badge ${srcClass(s.src)}">${esc(s.src)}</span> <a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.note||s.url)}</a><p class="note" style="color:var(--muted)">加入於 ${esc(s.added)}</p></div><button class="del" type="button" data-i="${i}">移除</button></div>`).join("");
+  el.querySelectorAll(".del").forEach(b=>b.onclick=()=>{ SAVED.splice(+b.dataset.i,1); storeSaved(SAVED); renderSaved(); });
+}
+document.getElementById("sAdd").addEventListener("click", ()=>{
+  const url = document.getElementById("sUrl").value.trim();
+  const note = document.getElementById("sNote").value.trim();
+  const src = document.getElementById("sSrc").value;
+  const msg = document.getElementById("sMsg");
+  if(!/^https?:\/\//.test(url)){ msg.textContent = "請貼上以 https:// 開頭的貼文連結。"; return; }
+  const d = new Date();
+  SAVED.unshift({url, note, src, added: `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`});
+  msg.textContent = storeSaved(SAVED) ? "已加入。" : "已加入，但這個瀏覽器無法保存，重新整理後會消失。";
+  document.getElementById("sUrl").value = ""; document.getElementById("sNote").value = "";
+  renderSaved();
+});
+renderSaved();
+
+
+/* Re-search */
+const ARTIFACT_URL = "https://claude.ai/artifact/8fU1j6ML1MgzAqgkpwENz8";
+const LAST_UPDATE = "2026-11-08";
+document.getElementById("lastUpdate").textContent = LAST_UPDATE.replace(/-/g,"/");
+const REFRESH_PROMPT = `我附上了「遊戲開發情報站」的 HTML 檔（index.html），請幫我更新：
+
+1. 先讀這個檔案，看現有的 POSTS 資料（避免重複）與 LAST_UPDATE（目前是 ${LAST_UPDATE}）。
+2. 搜尋從 ${LAST_UPDATE} 到今天，開發者在 X、Threads、Facebook、論壇（PTT、LINUX DO、Reddit 等）親自發布、與遊戲開發相關的貼文。以 AI 應用為主，也包含新創意、實作分享、市場趨勢。Threads 和 Facebook 請透過媒體報導中引用的原帖找。盡量多找，每則都要有真實可開啟的連結，找不到原帖就標明連到報導，不要編造。
+3. 把新貼文用相同格式加進 POSTS，把 LAST_UPDATE 改成今天，必要時重新評估精選 10 篇。
+4. 不要發布成 artifact，產生更新後的完整 HTML 檔讓我下載，檔名維持 index.html。`;
+document.getElementById("refreshBtn").href = "https://claude.ai/new?q=" + encodeURIComponent(REFRESH_PROMPT);
+document.getElementById("copyPrompt").addEventListener("click", async ()=>{
+  const note = document.getElementById("refreshNote");
+  try{ await navigator.clipboard.writeText(REFRESH_PROMPT); note.textContent = "已複製搜尋指令。開一個新的 Claude 對話貼上送出即可。"; }
+  catch(e){
+    note.innerHTML = "這個瀏覽器不允許自動複製，請手動選取下面的文字：";
+    const ta = document.createElement("textarea"); ta.value = REFRESH_PROMPT; ta.readOnly = true;
+    ta.style.cssText = "width:100%;min-height:160px;margin-top:8px;font:inherit;padding:10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)";
+    note.after(ta); ta.focus(); ta.select();
+  }
+});
+
+/* Tabs via hash */
+const VIEWS = (window.claude && typeof window.claude.use==="function") ? ["top10","feed","ask"] : ["top10","feed"];
+function show(){
+  const h = location.hash.replace("#","");
+  const v = VIEWS.includes(h) ? h : "top10";
+  VIEWS.forEach(n=>{ document.getElementById("view-"+n).hidden = n!==v; });
+  document.querySelectorAll("nav.tabs a").forEach(a=>{
+    if(a.dataset.view===v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current");
+  });
+}
+window.addEventListener("hashchange", show);
+show();
+
+/* Ask AI via sample capability (only inside claude.ai) */
+if(!(window.claude && typeof window.claude.use==="function")){
+  const askLink=document.querySelector('nav.tabs a[data-view="ask"]'); if(askLink) askLink.remove();
+  if(location.hash==="#ask"){ location.hash="#top10"; }
+}
+let sample = null, ctrl = null;
+const askBtn = document.getElementById("askBtn"), stopBtn = document.getElementById("stopBtn");
+const note = document.getElementById("askNote"), answer = document.getElementById("answer");
+askBtn.disabled = true;
+note.textContent = "正在連線 AI…";
+if (window.claude && typeof window.claude.use === "function") {
+  window.claude.use("sample").then(s=>{
+    sample = s;
+    if(s){ askBtn.disabled=false; note.textContent="第一次使用時會請你同意讓這個頁面詢問 Claude。"; }
+    else { note.textContent="這個檢視無法使用 AI 問答。請在 claude.ai 登入後開啟此頁。"; }
+  }).catch(()=>{ note.textContent="這個檢視無法使用 AI 問答。請在 claude.ai 登入後開啟此頁。"; });
+} else {
+  note.textContent="這個檢視無法使用 AI 問答。請在 claude.ai 開啟已發布的頁面。";
+}
+
+askBtn.addEventListener("click", async ()=>{
+  const proj = document.getElementById("proj").value.trim();
+  if(!proj){ note.textContent="先描述你的專案，例如類型、引擎、團隊人數與想解決的問題。"; return; }
+  if(!sample) return;
+  ctrl = new AbortController();
+  askBtn.disabled = true; stopBtn.hidden = false; answer.textContent = ""; note.textContent = "分析中…";
+  const data = POSTS.map(p=>({標題:p.title,來源:p.src,作者:p.author,日期:p.date,摘要:p.summary,連結:p.url})).concat(SAVED.map(s=>({標題:s.note||"（使用者自行加入，未附說明）",來源:s.src,連結:s.url,備註:"使用者自行加入，內容僅有標題說明"})));
+  const prompt = `你是資深遊戲開發顧問。以下是近一個月開發者在社群上發布的遊戲開發貼文整理（JSON），以及一位開發者的專案描述。
+請用繁體中文（台灣用語）回答，純文字、不要使用 Markdown 符號（不要用 #、*、表格）。
+格式：
+一、最相關的 3 則情報：每則寫標題、為什麼跟這個專案有關（2 句內）。
+二、建議馬上可以做的 3 到 5 件事：具體到工具、步驟或設定。
+三、要注意的風險：1 到 3 點。
+只根據提供的情報與一般業界知識回答，不要捏造情報中沒有的事件或數字。
+
+情報：
+${JSON.stringify(data)}
+
+開發者的專案：
+${proj}`;
+  try{
+    const r = await sample(prompt, { signal: ctrl.signal, cache:false, onText:({text})=>{ answer.textContent = text; } });
+    answer.textContent = r.text;
+    note.textContent = r.truncated ? "回答過長被截斷，可以把問題縮小後再問一次。" : "";
+  }catch(e){
+    if(e && e.code==="not_granted"){ note.textContent="未取得使用 AI 的同意，這個功能已停用。"; askBtn.hidden = true; }
+    else if(e && e.code==="rate_limited"){ note.textContent="請求太頻繁，請稍等一分鐘再試。"; }
+    else if(e && e.name==="AbortError"){ note.textContent="已停止。"; if(e.text) answer.textContent=e.text; }
+    else { note.textContent="AI 回覆失敗，請稍後再試。"; if(e && e.text) answer.textContent=e.text; }
+  }finally{
+    askBtn.disabled = !sample; stopBtn.hidden = true; ctrl = null;
+  }
+});
+stopBtn.addEventListener("click", ()=>{ if(ctrl) ctrl.abort(); });
+</script>
+</body>
+</html>
